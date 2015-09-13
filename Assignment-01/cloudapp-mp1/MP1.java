@@ -111,15 +111,16 @@ public class MP1 {
 			}
 		}
 	}
-	System.out.println("Index [" + index + "] j [" + j + "]");
-	//Map<String, Integer> m0 = new TreeMap<String, Integer>(hm);
+	//System.out.println("Index [" + index + "] j [" + j + "]");
 	HashMap<String, Integer> m1 = sortByValue(hm);
-	HashMap<String, Integer> m2 = sortByKey(m1);
 
 	Iterator<String> iter = m1.keySet().iterator();
+	j = 0;
 	for (; iter.hasNext(); ) {
 		String n = iter.next();
 		System.out.println("[" + n + "] " + m1.get(n));
+		if (j < 20) 
+			ret[j++] = n;
 	}
 
         return ret;
@@ -166,11 +167,15 @@ String[] removeStopWords(String[] sta, List l) {
 }
 
 // http://beginnersbook.com/2013/12/how-to-sort-hashmap-in-java-by-keys-and-values/
+// http://stackoverflow.com/questions/3074154/sorting-a-hashmap-based-on-value-then-key
 private static HashMap sortByValue(HashMap map) {
 	List list = new LinkedList(map.entrySet());
 	Collections.sort(list, new Comparator() {
 		public int compare(Object o1, Object o2) { 
-			return ((Comparable) ((Map.Entry)(o2)).getValue()).compareTo(((Map.Entry) (o1)).getValue());
+			int cmp1 = ((Comparable) ((Map.Entry)(o2)).getValue()).compareTo(((Map.Entry) (o1)).getValue());
+			if (cmp1 == 0)
+				return ((Comparable) ((Map.Entry)(o1)).getKey()).compareTo(((Map.Entry) (o2)).getKey());
+			return cmp1;
 		} 
 	});
 	HashMap sortedHashMap = new LinkedHashMap();
@@ -179,61 +184,6 @@ private static HashMap sortByValue(HashMap map) {
 		sortedHashMap.put(entry.getKey(), entry.getValue());
 	}
 	return sortedHashMap;
-}
-
-private static HashMap sortByKey(HashMap map) {
-	List list = new LinkedList(map.entrySet());
-	HashMap result = new HashMap();
-	// Take the first element of map
-	Iterator it = list.iterator();
-	if (!it.hasNext()) // If no elements then a hashmap with no items
-		return result; 
-
-	Map.Entry dummyEntry = (Map.Entry) it.next();
-	HashMap hmTmp = new LinkedHashMap();
-
-	hmTmp.put(dummyEntry.getKey(), dummyEntry.getValue());
-	//if (!it.hasNext()) // if just one element then return hmTmp
-		//return hmTmp;
-	boolean flag = false; // no identitical values
-	while (it.hasNext()) { 
-		Map.Entry currEntry = (Map.Entry) it.next();
-		if (dummyEntry.getValue() == currEntry.getValue()) {
-			//System.out.println("[LOG] Having the same value [" + dummyEntry.getValue() + "]");
-			hmTmp.put(dummyEntry.getKey(), dummyEntry.getValue());
-			flag = true; // identitical values
-		} else {
-			if (!flag) { // no identitical values, just add dummy
-				//System.out.println("[LOG] Entering value [" + dummyEntry.getKey() + "] with value [" + dummyEntry.getValue() + "]");
-				result.put(dummyEntry.getKey(), dummyEntry.getValue());
-				dummyEntry = currEntry;
-				hmTmp = new LinkedHashMap();
-				continue;
-			} // There were more duplicated values but dummy and
-			// current are different. current can not be modified
-			// because it can be part of another group of similar
-			// values.
-			// sort hmTmp
-			hmTmp.put(dummyEntry.getKey(), dummyEntry.getValue());
-			Map<String, Integer> treemap = new TreeMap<String, Integer>(hmTmp);
-			// add hmTmp elements to result
-			for (Map.Entry<String, Integer> entry : treemap.entrySet()) {
-				//System.out.println("\t[LOG] Entering value [" + dummyEntry.getKey() + "] with value [" + dummyEntry.getValue() + "]");
-				result.put(entry.getKey(), entry.getValue());
-			}
-			// preparing for the next round
-			hmTmp = new LinkedHashMap();
-			flag = false;
-		} 
-		dummyEntry = currEntry;
-	} 
-	if (hmTmp.size() != 0) {
-		Map<String, Integer> treemap = new TreeMap<String, Integer>(hmTmp);
-		for (Map.Entry<String, Integer> entry : treemap.entrySet()) 
-			result.put(entry.getKey(), entry.getValue());
-	}
-	result.put(dummyEntry.getKey(), dummyEntry.getValue()); 
-	return result;
 }
 
 /**************/
@@ -248,9 +198,9 @@ private static HashMap sortByKey(HashMap map) {
             String inputFileName = "./input.txt";
             MP1 mp = new MP1(userName, inputFileName);
             String[] topItems = mp.process();
-            //for (String item: topItems){
-            //    System.out.println(item);
-            //}
+            for (String item: topItems){
+                System.out.println(item);
+            }
         }
     }
 }
