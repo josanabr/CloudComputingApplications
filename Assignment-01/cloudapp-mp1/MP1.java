@@ -118,7 +118,7 @@ public class MP1 {
 	j = 0;
 	for (; iter.hasNext(); ) {
 		String n = iter.next();
-		System.out.println("[" + n + "] " + m1.get(n));
+		//System.out.println("[" + n + "] " + m1.get(n));
 		if (j < 20) 
 			ret[j++] = n;
 	}
